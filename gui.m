@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 05-Jun-2018 18:52:15
+% Last Modified by GUIDE v2.5 05-Jun-2018 21:15:55
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -64,6 +64,8 @@ set(handles.axes2,'visible','off');
 global cam 
 global exit
 global notes % cada fila: nota, registro, duracion, posicion
+global duracion
+duracion = 0.5;
 %registros: 1,2,4,8
 notes=[9 1 1 0;
        9 1 1 1;
@@ -88,7 +90,11 @@ imshow(zeros(size(img,1),size(img,2)));
 global captura
 captura=false;
 
+global DTW
+DTW=1;
 
+global posiciones
+posiciones =[];
 
 
 % --- Outputs from this function are returned to the command line.
@@ -118,6 +124,9 @@ global cam
 global exit
 global captura
 global notes
+global duracion
+global DTW
+global posiciones
 axes(handles.axes2);
 img = snapshot(cam);
 imshow(flip(img,2));
@@ -130,22 +139,34 @@ while exit==0
     
     if captura
         captura=false;
-        %[x,y] = funcionPosicionDedo();
+        %[x,y] = funcionPosicionDedo(enviar imagen al reves);
         load('./archivos mat/parametros.mat');
         set(handles.capture_button,'BackgroundColor',[0.5 1 0.1]);
         senal=grabacion(time,Fs,channel,n_bits);
         set(handles.capture_button,'BackgroundColor',[0.6 0.1 0]);
-        nota = get_note(senal);
+        nota = get_note(senal,DTW,str2num(get(handles.w_value,'String')));
         
         y=randi(size(img,1),1,1)
         aux = find(y>lin);
         registro = aux(end);
-        duracion=1;
+        if (registro==1) %reverse the position of registers
+            registro=4;
+        elseif (registro==2)
+            registro=3;
+        elseif (registro==3)
+            registro=2;
+        elseif (registro==4)
+            registro=1;
+        end
         x=randi(size(img,2),1,1)
         notes = [notes; [nota-1 registro duracion x]];
+        posiciones = [posiciones; [x y]];
+        note_name = translate_note_name(notes(end,1));
+        set(handles.last_note,'String',note_name);
     end
         
     img(lin(2:end-1),:,:)=0;
+    img=draw_notes(img,posiciones);
     imshow(flip(img,2));
     
 end
@@ -166,8 +187,12 @@ global DTW
 opt = get(hObject,'String');
 if strcmp(opt,'DTW')
     DTW=0;
+    set(handles.text2,'Visible','off');
+    set(handles.w_value,'Visible','off');
 elseif strcmp(opt,'DTW-R')
     DTW=1;
+    set(handles.text2,'Visible','on');
+    set(handles.w_value,'Visible','on');
 end
 
 % --- Executes on button press in CAPTURE.
@@ -179,8 +204,7 @@ captura=true;
 function pushbutton4_Callback(hObject, eventdata, handles)
 global notes
 if ~isempty(notes)
-    notes = sortrows(notes,4);
-    song = calculate_song(notes);
+    song = calculate_song(sortrows(notes,4));
     sound(song,20500);
 end
 
@@ -188,4 +212,47 @@ end
 % --- Executes on button press in CLEAR.
 function pushbutton5_Callback(hObject, eventdata, handles)
 global notes
+global posiciones
 notes=[];
+posiciones=[];
+set(handles.last_note,'String','');
+
+
+% --- Executes when selected object is changed in NOTE VALUES.
+function uibuttongroup2_SelectionChangedFcn(hObject, eventdata, handles)
+a = get(hObject, 'String');
+global duracion
+switch a
+    case 'Whole note'
+        duracion=4;
+    case 'Half note'
+        duracion=2;
+    case 'Quarter note'
+        duracion=1;
+    case 'Eighth note'
+        duracion=0.5;
+end
+
+function w_value_Callback(hObject, eventdata, handles)
+%nothing
+
+% --- Executes during object creation, after setting all properties.
+function w_value_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in ERASE LAST NOTE.
+function pushbutton6_Callback(hObject, eventdata, handles)
+global notes
+global posiciones
+notes = notes(1:end-1, :);
+posiciones = posiciones(1:end-1,:);
+if (~isempty(notes))
+    note_name = translate_note_name(notes(end,1));
+    set(handles.last_note,'String',note_name);
+else
+    set(handles.last_note,'String','');
+end
