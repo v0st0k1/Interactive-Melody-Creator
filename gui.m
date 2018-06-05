@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 04-Jun-2018 21:35:16
+% Last Modified by GUIDE v2.5 05-Jun-2018 18:52:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -73,7 +73,10 @@ notes=[9 1 1 0;
        9 1 1 5;
        5 1 0.5 6;
        0 2 0.5 7;
-       9 1 1 8]; %do en 4 registros
+       9 1 1 8]; %darth vader song for debugging
+
+notes=[];   
+   
 exit=0;
 cam = webcam(1);
 img = snapshot(cam);
@@ -81,6 +84,9 @@ img = snapshot(cam);
 set(handles.axes2,'visible','on');
 axes(handles.axes2);
 imshow(zeros(size(img,1),size(img,2)));
+
+global captura
+captura=false;
 
 
 
@@ -110,6 +116,8 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 set(hObject,'Visible','off');
 global cam
 global exit
+global captura
+global notes
 axes(handles.axes2);
 img = snapshot(cam);
 imshow(flip(img,2));
@@ -120,9 +128,24 @@ lin=floor(lin);
 while exit==0
     img = snapshot(cam);
     
-    %here take img for computation before printing
-    
-    img(lin,:,:)=0;
+    if captura
+        captura=false;
+        %[x,y] = funcionPosicionDedo();
+        load('./archivos mat/parametros.mat');
+        set(handles.capture_button,'BackgroundColor',[0.5 1 0.1]);
+        senal=grabacion(time,Fs,channel,n_bits);
+        set(handles.capture_button,'BackgroundColor',[0.6 0.1 0]);
+        nota = get_note(senal);
+        
+        y=randi(size(img,1),1,1)
+        aux = find(y>lin);
+        registro = aux(end);
+        duracion=1;
+        x=randi(size(img,2),1,1)
+        notes = [notes; [nota-1 registro duracion x]];
+    end
+        
+    img(lin(2:end-1),:,:)=0;
     imshow(flip(img,2));
     
 end
@@ -148,8 +171,9 @@ elseif strcmp(opt,'DTW-R')
 end
 
 % --- Executes on button press in CAPTURE.
-function pushbutton3_Callback(hObject, eventdata, handles)
-
+function capture_button_Callback(hObject, eventdata, handles)
+global captura
+captura=true;
 
 % --- Executes on button press in PLAY
 function pushbutton4_Callback(hObject, eventdata, handles)
