@@ -1,28 +1,4 @@
 function varargout = gui(varargin)
-% GUI MATLAB code for gui.fig
-%      GUI, by itself, creates a new GUI or raises the existing
-%      singleton*.
-%
-%      H = GUI returns the handle to a new GUI or the handle to
-%      the existing singleton*.
-%
-%      GUI('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in GUI.M with the given input arguments.
-%
-%      GUI('Property','Value',...) creates a new GUI or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before gui_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to gui_OpeningFcn via varargin.
-%
-%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
-%
-% See also: GUIDE, GUIDATA, GUIHANDLES
-
-% Edit the above text to modify the response to help gui
-
-% Last Modified by GUIDE v2.5 05-Jun-2018 21:15:55
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -99,23 +75,13 @@ posiciones =[];
 
 % --- Outputs from this function are returned to the command line.
 function varargout = gui_OutputFcn(hObject, eventdata, handles) 
-% varargout  cell array for returning output args (see VARARGOUT);
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
 
 % --- Executes during object creation, after setting all properties.
 function axes2_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to axes2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: place code in OpeningFcn to populate axes2
-
+% nothing
 
 % --- Executes on button press in START!.
 function pushbutton1_Callback(hObject, eventdata, handles)
@@ -139,30 +105,32 @@ while exit==0
     
     if captura
         captura=false;
-        %[x,y] = funcionPosicionDedo(enviar imagen al reves);
-        load('./archivos mat/parametros.mat');
-        set(handles.capture_button,'BackgroundColor',[0.5 1 0.1]);
-        senal=grabacion(time,Fs,channel,n_bits);
-        set(handles.capture_button,'BackgroundColor',[0.6 0.1 0]);
-        nota = get_note(senal,DTW,str2num(get(handles.w_value,'String')));
-        
-        y=randi(size(img,1),1,1)
-        aux = find(y>lin);
-        registro = aux(end);
-        if (registro==1) %reverse the position of registers
-            registro=4;
-        elseif (registro==2)
-            registro=3;
-        elseif (registro==3)
-            registro=2;
-        elseif (registro==4)
-            registro=1;
+        [x,y] = finger_detection(double(rgb2gray(img)),0.6);
+        if (~isempty(x))
+            load('./archivos mat/parametros.mat');
+            set(handles.capture_button,'BackgroundColor',[0.5 1 0.1]);
+            senal=grabacion(time,Fs,channel,n_bits);
+            set(handles.capture_button,'BackgroundColor',[0.6 0.1 0]);
+            nota = get_note(senal,DTW,str2num(get(handles.w_value,'String')));
+
+            %y=randi(size(img,1),1,1)
+            aux = find(y>lin);
+            registro = aux(end);
+            if (registro==1) %reverse the position of registers
+                registro=4;
+            elseif (registro==2)
+                registro=3;
+            elseif (registro==3)
+                registro=2;
+            elseif (registro==4)
+                registro=1;
+            end
+            %x=randi(size(img,2),1,1)
+            notes = [notes; [nota-1 registro duracion x]];
+            posiciones = [posiciones; [x y]];
+            note_name = translate_note_name(notes(end,1));
+            set(handles.last_note,'String',note_name);
         end
-        x=randi(size(img,2),1,1)
-        notes = [notes; [nota-1 registro duracion x]];
-        posiciones = [posiciones; [x y]];
-        note_name = translate_note_name(notes(end,1));
-        set(handles.last_note,'String',note_name);
     end
         
     img(lin(2:end-1),:,:)=0;
