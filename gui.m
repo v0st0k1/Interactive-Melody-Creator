@@ -105,8 +105,8 @@ while exit==0
     
     if captura
         captura=false;
-        [x,y] = finger_detection(double(rgb2gray(img)),0.6);
-        if (~isempty(x))
+        [x,y] = position_detection(img,70);
+        if (x~=-1)%si no se ha detectado nada
             load('./archivos mat/parametros.mat');
             set(handles.capture_button,'BackgroundColor',[0.5 1 0.1]);
             senal=grabacion(time,Fs,channel,n_bits);
@@ -126,8 +126,8 @@ while exit==0
                 registro=1;
             end
             %x=randi(size(img,2),1,1)
-            notes = [notes; [nota-1 registro duracion x]];
-            posiciones = [posiciones; [x y]];
+            notes = [notes; [nota-1 registro duracion size(img,2)-x]];
+            posiciones = [posiciones; [size(img,2)-x y]];
             note_name = translate_note_name(notes(end,1));
             set(handles.last_note,'String',note_name);
         end
