@@ -7,7 +7,7 @@ img = snapshot(cam);
 img_rojo = img(:,:,1);
 img_gray = rgb2gray(img);
 resultado = img_rojo-img_gray;
-resultado = resultado >= 2000;
+resultado = resultado >= 10;
 ele = strel('square',3);
 resultado_apertura = imopen(resultado,ele);
 figure,imshow(resultado_apertura,[]);

@@ -1,10 +1,13 @@
-function [x,y] = position_detection(frame,umbral)
+function [x,y] = position_detection(frame)
     img_rojo = frame(:,:,1);
+    img_gray = 255-rgb2gray(frame);
     img_gray = rgb2gray(frame);
     resultado = img_rojo-img_gray;
+    umbral = 80;
     resultado = resultado >= umbral;
     ele = strel('square',3);
     resultado_apertura = imopen(resultado,ele);
+    %figure,imshow(resultado_apertura);
     bbox = regionprops(resultado_apertura,'BoundingBox');
     if ~isempty(bbox)
         bbox = bbox.BoundingBox;

@@ -105,7 +105,7 @@ while exit==0
     
     if captura
         captura=false;
-        [x,y] = position_detection(img,70);
+        [x,y] = position_detection(img);
         if (x~=-1)%si no se ha detectado nada
             load('./archivos mat/parametros.mat');
             set(handles.capture_button,'BackgroundColor',[0.5 1 0.1]);
