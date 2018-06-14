@@ -3,7 +3,7 @@ amp=10;
 fs=20500;  % sampling frequency
 song=[];
 for i=1:size(notes,1)
-    duration=notes(i,3);
+    duration=notes(i,3)/2;
     switch (notes(i,1))
         case 0 %do
             aux=261.626;
