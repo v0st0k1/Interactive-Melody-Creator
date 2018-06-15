@@ -49,5 +49,5 @@ cómoda y sencilla, ya que en la versión actual se deberá hacer uso del archiv
 
 Imagen de demostración.
 <p align="center">
-  <img width="560" height="400" src="/imagen_demo.png">
+  <img width="680" height="480" src="/imagen_demo.png">
 </p>
