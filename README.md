@@ -46,3 +46,8 @@ PLAY! en cualquier momento. El tempo de la melodía será siempre ppm = 120.
 - Añadir una interfaz para poder grabar los patrones de los números de forma mas 
 cómoda y sencilla, ya que en la versión actual se deberá hacer uso del archivo 
 'grabar_patrones.m' para hacer esto de forma manual.
+
+Imagen de demostración.
+<p align="center">
+  <img width="560" height="400" src="/imagen_demo.png">
+</p>
