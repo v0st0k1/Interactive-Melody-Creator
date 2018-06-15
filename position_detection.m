@@ -3,7 +3,7 @@ function [x,y] = position_detection(frame)
     img_gray = 255-rgb2gray(frame);
     img_gray = rgb2gray(frame);
     resultado = img_rojo-img_gray;
-    umbral = 85;
+    umbral = 70;
     resultado = resultado >= umbral;
     ele = strel('square',3);
     resultado_apertura = imopen(resultado,ele);
