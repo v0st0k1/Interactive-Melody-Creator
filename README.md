@@ -1,8 +1,9 @@
 # Creador de melodías interactivo
-Desarrollado por:
-- Aarón Arias Pérez [@aaronariasperez](https://github.com/aaronariasperez)
-- Francisco Tomás Cruz Molina
-- Carlos Guzmán Cabrera
+
+## Authors
+* **Aarón Arias Pérez** [@aaronariasperez](https://github.com/aaronariasperez)
+* **Carlos Guzmán Cabrera** [@carlos_guzca](https://github.com/v0st0k1)
+* **Francisco Tomás Cruz Molina**
 
 **¿Qué es este proyecto?**
 
